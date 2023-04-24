@@ -3,7 +3,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 
-public class JMSPerformance {
+public class JMSProducer {
     private static final String url = ActiveMQConnection.DEFAULT_BROKER_URL;
     private static final String queueName = "MESSAGE_QUEUE";
     public static void main(String[] args) throws JMSException {
@@ -17,7 +17,7 @@ public class JMSPerformance {
         Destination destination = session.createQueue(queueName);
 
         // Create a 1KB message
-        Message message = JMSPerformance.createMessage(session);
+        Message message = JMSProducer.createMessage(session);
 
         // Send the JMS message via the producer
         MessageProducer producer = session.createProducer(destination);
