@@ -31,13 +31,13 @@ public class MyKafkaConsumer {
 
         // polling
         long start, responseTimeInNano = 0;
-        for (long i = 0; i < numOfMessages; i++) {
-            start = System.currentTimeMillis();
-            ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, byte[]> record : records) {
-                LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
-            }
-            responseTimeInNano += System.currentTimeMillis() - start;
+        for (long i = 0; i < numOfMessages-1000; i++) {
+            start = System.nanoTime();
+            ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofNanos(100));
+//            for (ConsumerRecord<String, byte[]> record : records) {
+//                LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
+//            }
+            responseTimeInNano += System.nanoTime() - start;
             if(i % 10000 == 0)
                 LOGGER.info("Received 10000 messages");
 //            LOGGER.info("record " + i + "pulled");
