@@ -12,6 +12,7 @@ import java.util.Properties;
 
 public class MyKafkaProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyKafkaProducer.class);
+    private static final long numOfMessages = 100000;
     public static void main(String[] args) {
 
         // Set up the producer properties
@@ -30,14 +31,16 @@ public class MyKafkaProducer {
         ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
 
         // Send 20 1KB messages
-        long start, responseTimeInMillis = 0;
-        for (int i = 0; i < 20; i++) {
-            start = System.currentTimeMillis();
+        long start, responseTimeInNano = 0;
+        for (long i = 0; i < numOfMessages; i++) {
+            start = System.nanoTime();
             producer.send(record);
-            responseTimeInMillis += System.currentTimeMillis() - start;
-            LOGGER.info("record " + i + "sent");
+            responseTimeInNano += System.nanoTime() - start;
+            if(i % 10000 == 0)
+                LOGGER.info("Sent 10000 messages");
+//            LOGGER.info("record " + i + "sent");
         }
-        LOGGER.info("Producer response Time = " + responseTimeInMillis/20 + "(ms)");
+        LOGGER.info("Producer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
 
         // Flush and close the producer
         producer.flush();

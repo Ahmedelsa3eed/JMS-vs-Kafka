@@ -1,7 +1,6 @@
 package responseTime;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -15,6 +14,7 @@ import java.util.Properties;
 
 public class MyKafkaConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyKafkaConsumer.class);
+    private static final long numOfMessages = 100000;
     public static void main(String[] args) {
         // Set up the consumer properties
         Properties properties = new Properties();
@@ -31,16 +31,18 @@ public class MyKafkaConsumer {
         consumer.subscribe(Arrays.asList("my-topic"));
 
         // polling
-        long start, responseTimeInMillis = 0;
-        for (int i = 0; i < 20; i++) {
-            start = System.currentTimeMillis();
-            ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, byte[]> record : records) {
-                LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
-            }
-            responseTimeInMillis += System.currentTimeMillis() - start;
-            LOGGER.info("record " + i + "pulled");
+        long start, responseTimeInNano = 0;
+        for (long i = 0; i < numOfMessages-1000; i++) {
+            start = System.nanoTime();
+            ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofNanos(100));
+//            for (ConsumerRecord<String, byte[]> record : records) {
+//                LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
+//            }
+            responseTimeInNano += System.nanoTime() - start;
+            if(i % 10000 == 0)
+                LOGGER.info("Received 10000 messages");
+//            LOGGER.info("record " + i + "pulled");
         }
-        System.out.println("Consumer response Time = " + responseTimeInMillis/20 + "(ms)");
+        System.out.println("Consumer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
     }
 }

@@ -8,6 +8,7 @@ import javax.jms.*;
 public class JMSProducer {
     private static final String url = ActiveMQConnection.DEFAULT_BROKER_URL;
     private static final String queueName = "MESSAGE_QUEUE";
+    private static final long numOfMessages = 100000;
     public static void main(String[] args) throws JMSException {
         // Obtain a JMS connection to activeMQ provider
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
@@ -23,14 +24,16 @@ public class JMSProducer {
 
         // Send the JMS message via the producer
         MessageProducer producer = session.createProducer(destination);
-        long start, responseTimeInMillis = 0;
-        for (int i = 0; i < 20; i++) {
-            start = System.currentTimeMillis();
+        long start, responseTimeInNano = 0;
+        for (long i = 0; i < numOfMessages; i++) {
+            start = System.nanoTime();
             producer.send(message);
-            responseTimeInMillis += (System.currentTimeMillis() - start);
-            System.out.println("msg " + i + " sent");
+            responseTimeInNano += (System.nanoTime() - start);
+            if(i % 10000 == 0)
+                System.out.println("Sent 10000 messages");
+//            System.out.println("msg " + i + " sent");
         }
-        System.out.println("Producer response Time = " + responseTimeInMillis/20 + "(ms)");
+        System.out.println("Producer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
 
         // Close the JMS objects
         producer.close();

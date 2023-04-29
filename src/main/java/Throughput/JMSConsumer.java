@@ -8,7 +8,7 @@ import javax.jms.*;
 public class JMSConsumer implements MessageListener{
     private static final String url = ActiveMQConnection.DEFAULT_BROKER_URL;
     private static final String queueName = "THROUGHPUT_QUEUE";
-    private static final int numberOfMessages = 500000;
+    private static final int numberOfMessages = 100000;
     private static int messageCount = 0;
     private final long startTime;
 
