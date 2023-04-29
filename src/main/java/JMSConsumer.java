@@ -6,6 +6,8 @@ import javax.jms.*;
 public class JMSConsumer {
     private static final String url = ActiveMQConnection.DEFAULT_BROKER_URL;
     private static final String queueName = "MESSAGE_QUEUE";
+    private static final long numOfMessages = 100000;
+
     public static void main(String[] args) throws JMSException {
         // Obtain a JMS connection to activeMQ provider
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
@@ -18,14 +20,16 @@ public class JMSConsumer {
 
         // Receive the JMS message via the consumer
         MessageConsumer consumer = session.createConsumer(destination);
-        long start, responseTimeInMillis = 0;
-        for (int i = 0; i < 20; i++) {
-            start = System.currentTimeMillis();
+        long start, responseTimeInNano = 0;
+        for (long i = 0; i < numOfMessages; i++) {
+            start = System.nanoTime();
             consumer.receive();
-            responseTimeInMillis += (System.currentTimeMillis() - start);
-            System.out.println("msg " + i + " received");
+            responseTimeInNano += (System.nanoTime() - start);
+            if(i % 10000 == 0)
+                System.out.println("Received 10000 messages");
+//            System.out.println("msg " + i + " received");
         }
-        System.out.println("Consumer response Time = " + responseTimeInMillis/20 + "(ms)");
+        System.out.println("Consumer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
 
         // Close the JMS objects
         consumer.close();

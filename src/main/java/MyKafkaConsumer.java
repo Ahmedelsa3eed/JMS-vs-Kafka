@@ -13,6 +13,7 @@ import java.util.Properties;
 
 public class MyKafkaConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyKafkaConsumer.class);
+    private static final long numOfMessages = 100000;
     public static void main(String[] args) {
         // Set up the consumer properties
         Properties properties = new Properties();
@@ -29,16 +30,18 @@ public class MyKafkaConsumer {
         consumer.subscribe(Arrays.asList("my-topic"));
 
         // polling
-        long start, responseTimeInMillis = 0;
-        for (int i = 0; i < 20; i++) {
+        long start, responseTimeInNano = 0;
+        for (long i = 0; i < numOfMessages; i++) {
             start = System.currentTimeMillis();
             ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<String, byte[]> record : records) {
                 LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
             }
-            responseTimeInMillis += System.currentTimeMillis() - start;
-            LOGGER.info("record " + i + "pulled");
+            responseTimeInNano += System.currentTimeMillis() - start;
+            if(i % 10000 == 0)
+                LOGGER.info("Received 10000 messages");
+//            LOGGER.info("record " + i + "pulled");
         }
-        System.out.println("Consumer response Time = " + responseTimeInMillis/20 + "(ms)");
+        System.out.println("Consumer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
     }
 }
