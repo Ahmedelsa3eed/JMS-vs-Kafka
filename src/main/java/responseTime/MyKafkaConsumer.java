@@ -1,6 +1,7 @@
 package responseTime;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -32,16 +33,17 @@ public class MyKafkaConsumer {
 
         // polling
         long start, responseTimeInNano = 0;
-        for (long i = 0; i < numOfMessages-1000; i++) {
+        for (long i = 0; i < numOfMessages;) {
             start = System.nanoTime();
             ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofNanos(100));
-//            for (ConsumerRecord<String, byte[]> record : records) {
-//                LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
-//            }
+        //    for (ConsumerRecord<String, byte[]> record : records) {
+        //     //    LOGGER.info("key: " + record.key() + ", partition: " + record.partition() + ", offset: " + record.offset());
+        //         i++;
+        //    }
+           i += records.count();
             responseTimeInNano += System.nanoTime() - start;
             if(i % 10000 == 0)
                 LOGGER.info("Received 10000 messages");
-//            LOGGER.info("record " + i + "pulled");
         }
         System.out.println("Consumer response Time = " + ((double)responseTimeInNano)/numOfMessages/1e6 + " ms");
     }
