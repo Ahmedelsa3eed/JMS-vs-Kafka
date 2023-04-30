@@ -34,7 +34,7 @@ public class JMSProducer {
         long startTime = System.nanoTime();
         for (int i = 0; i < numberOfMessages; i++) {
             producer.send(message);
-//            Thread.sleep(sleepIntervalMilli, sleepIntervalNano);
+           Thread.sleep(sleepIntervalMilli, sleepIntervalNano);
         }
 
         long endTime = System.nanoTime();
